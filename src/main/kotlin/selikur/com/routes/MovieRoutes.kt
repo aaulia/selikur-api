@@ -20,13 +20,13 @@ import selikur.com.utils.queryString
 @Location("/movies")
 class Movie {
     @Location("")
-    class Playing
+    data class Playing(val root: Movie)
 
     @Location("/upcoming")
-    class Upcoming
+    data class Upcoming(val root: Movie)
 
     @Location("/{id}")
-    data class Detail(val id: String)
+    data class Detail(val root: Movie, val id: String)
 }
 
 @OptIn(KtorExperimentalLocationsAPI::class)

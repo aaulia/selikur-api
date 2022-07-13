@@ -23,7 +23,7 @@ import selikur.com.utils.queryString
 @Location("/theaters")
 class Theater {
     @Location("/{id}")
-    data class Detail(val id: String)
+    data class Detail(val root: Theater, val id: String)
 }
 
 @OptIn(KtorExperimentalLocationsAPI::class)

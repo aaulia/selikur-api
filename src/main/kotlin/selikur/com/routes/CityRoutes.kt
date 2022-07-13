@@ -21,10 +21,10 @@ import selikur.com.utils.queryString
 @Location("/cities")
 class City {
     @Location("")
-    class Listing
+    data class Listing(val root: City)
 
     @Location("/{id}")
-    data class Detail(val id: String)
+    data class Detail(val root: City, val id: String)
 }
 
 @OptIn(KtorExperimentalLocationsAPI::class)
