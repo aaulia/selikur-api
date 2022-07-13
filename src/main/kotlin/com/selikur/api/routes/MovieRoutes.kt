@@ -1,5 +1,8 @@
 package com.selikur.api.routes
 
+import com.selikur.api.mapper.toCityDetail
+import com.selikur.api.mapper.toMovieDetail
+import com.selikur.api.mapper.toMovieEntry
 import io.ktor.application.*
 import io.ktor.locations.*
 import io.ktor.response.*
@@ -8,13 +11,7 @@ import it.skrape.core.htmlDocument
 import it.skrape.fetcher.AsyncFetcher
 import it.skrape.fetcher.response
 import it.skrape.fetcher.skrape
-import it.skrape.selects.Doc
 import it.skrape.selects.DocElement
-import it.skrape.selects.html5.*
-import com.selikur.api.models.Movie.Detail
-import com.selikur.api.models.Movie.Entry
-import com.selikur.api.utils.itemize
-import com.selikur.api.utils.queryString
 
 @OptIn(KtorExperimentalLocationsAPI::class)
 @Location("/movies")
@@ -27,6 +24,9 @@ class Movie {
 
     @Location("/{id}")
     data class Detail(val root: Movie, val id: String)
+
+    @Location("/{movieId}/theaters/{cityId}")
+    data class PlayingAt(val root: Movie, val movieId: String, val cityId: String)
 }
 
 @OptIn(KtorExperimentalLocationsAPI::class)
@@ -38,7 +38,7 @@ fun Route.movieRouting() {
                 htmlDocument {
                     relaxed = true
                     findAll(".grid_movie")
-                        .map(DocElement::toEntry)
+                        .map(DocElement::toMovieEntry)
                 }
             }
         }
@@ -53,7 +53,7 @@ fun Route.movieRouting() {
                 htmlDocument {
                     relaxed = true
                     findAll(".grid_movie")
-                        .map(DocElement::toEntry)
+                        .map(DocElement::toMovieEntry)
                 }
             }
         }
@@ -67,58 +67,25 @@ fun Route.movieRouting() {
             response {
                 htmlDocument {
                     relaxed = true
-                    toDetail(movie.id)
+                    toMovieDetail(movie.id)
                 }
             }
         }
 
         call.respond(detail)
     }
-}
 
-private fun DocElement.toEntry(): Entry {
-    return Entry(
-        a { findFirst { eachHref.firstOrNull()?.queryString("movie_id").orEmpty() } },  // id
-        ".title" { findFirst { text } },                                                // title
-        a { img { findFirst { eachSrc.firstOrNull().orEmpty() } } },                    // image
-        ".rating" { a { findFirst { text } } },                                         // rating
-        ".rating" { span { findFirst { text } } }                                       // type
-    )
-}
+    get<Movie.PlayingAt> { (_, mId, cId) ->
+        val theaters = skrape(AsyncFetcher) {
+            request { url = "https://m.21cineplex.com/gui.list_theater.php?find_by=3&movie_id=${mId}&city_id=${cId}" }
+            response {
+                htmlDocument {
+                    relaxed = true
+                    toCityDetail(cId)
+                }
+            }
+        }
 
-private fun Doc.toDetail(id: String): Detail {
-    return Detail(
-        id,                                                                             // id
-        "div.col-xs-8 > div" { findFirst { text } },                                    // title
-        "img.img-responsive" { findFirst { eachSrc.firstOrNull().orEmpty() } },         // image
-        "div.col-xs-3 > img" {                                                          // rating
-            findFirst {
-                eachSrc.firstOrNull()
-                    ?.substringAfterLast("/")
-                    ?.substringBeforeLast(".")
-                    ?.uppercase()
-                    ?.run { if (last().isDigit()) plus("+") else this }
-                    ?: ""
-            }
-        },
-        "a.btn-outline" { findFirst { text } },                                         // type
-        "div.col-xs-8" { findSecond { div { findFirst { text } } } }.itemize(),         // genre
-        ".glyphicon-time" { findFirst { parent { text } } },                            // duration
-        button {                                                                        // trailer
-            findAll {
-                firstOrNull { it.text.contains("TRAILER", ignoreCase = true) }
-                    ?.attribute("onclick")
-                    ?.substringAfter("'")
-                    ?.substringBefore("'")
-                    ?.trim()
-                    ?: ""
-            }
-        },
-        "#description" { findFirst { text } },                                          // summary
-        ".main-content > div:nth-child(4) > p" { 1 { text } }.itemize(),                // producers
-        ".main-content > div:nth-child(4) > p" { 3 { text } }.itemize(),                // directors
-        ".main-content > div:nth-child(4) > p" { 5 { text } }.itemize(),                // writers
-        ".main-content > div:nth-child(4) > p" { 7 { text } }.itemize(),                // casts
-        ".main-content > div:nth-child(4) > p" { 9 { text } }.itemize()                 // distributors
-    )
+        call.respond(theaters)
+    }
 }

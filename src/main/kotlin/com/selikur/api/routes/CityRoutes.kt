@@ -1,5 +1,7 @@
 package com.selikur.api.routes
 
+import com.selikur.api.mapper.toCityDetail
+import com.selikur.api.mapper.toCityEntry
 import io.ktor.application.*
 import io.ktor.locations.*
 import io.ktor.response.*
@@ -8,14 +10,7 @@ import it.skrape.core.htmlDocument
 import it.skrape.fetcher.AsyncFetcher
 import it.skrape.fetcher.response
 import it.skrape.fetcher.skrape
-import it.skrape.selects.Doc
 import it.skrape.selects.DocElement
-import it.skrape.selects.html5.a
-import it.skrape.selects.html5.div
-import com.selikur.api.models.City.Detail
-import com.selikur.api.models.City.Entry
-import com.selikur.api.models.Theater
-import com.selikur.api.utils.queryString
 
 @OptIn(KtorExperimentalLocationsAPI::class)
 @Location("/cities")
@@ -36,7 +31,7 @@ fun Route.cityRouting() {
                 htmlDocument {
                     relaxed = true
                     findAll(".list-group-item")
-                        .map(DocElement::toEntry)
+                        .map(DocElement::toCityEntry)
                 }
             }
         }
@@ -50,7 +45,7 @@ fun Route.cityRouting() {
             response {
                 htmlDocument {
                     relaxed = true
-                    toDetail(city.id)
+                    toCityDetail(city.id)
                 }
             }
         }
@@ -59,42 +54,5 @@ fun Route.cityRouting() {
     }
 }
 
-private fun DocElement.toEntry(): Entry {
-    return Entry(
-        div {
-            findFirst {
-                attribute("onclick")
-                    .substringAfter("'")
-                    .substringBefore("'")
-                    .queryString("city_id")
-                    .orEmpty()
-            }
-        },
-        div { findFirst { text } }
-    )
-}
 
-private fun Doc.toDetail(id: String): Detail {
-    return Detail(
-        id,
-        "ul.navbar-left > li.nav_bar-animate" { 3 { a { 0 { text } } } }.substringAfterLast("-").trim(),
-        "div.all      > li.list-group-item" { findAll { map(DocElement::toTheaterEntry) } },
-        "div.premiere > li.list-group-item" { findAll { map(DocElement::toTheaterEntry) } },
-        "div.imax     > li.list-group-item" { findAll { map(DocElement::toTheaterEntry) } }
-    )
-}
 
-private fun DocElement.toTheaterEntry(): Theater.Entry {
-    return Theater.Entry(
-        div {
-            findFirst {
-                attribute("onclick")
-                    .substringAfter("'")
-                    .substringBefore("'")
-                    .queryString("cinema_id")
-                    .orEmpty()
-            }
-        },
-        div { findFirst { text } }
-    )
-}
