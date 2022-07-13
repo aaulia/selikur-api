@@ -1,4 +1,4 @@
-package selikur.com.models
+package com.selikur.api.models
 
 import kotlinx.serialization.Serializable
 

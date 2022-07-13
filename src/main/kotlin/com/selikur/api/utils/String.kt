@@ -1,4 +1,4 @@
-package selikur.com.utils
+package com.selikur.api.utils
 
 fun String.queryString(field: String): String? {
     return substringAfterLast("?")

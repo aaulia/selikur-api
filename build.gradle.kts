@@ -11,8 +11,8 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.7.10"
 }
 
-group = "selikur.com"
-version = "0.0.1"
+group = "com.selikur.api"
+version = "1.0.0"
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
 
@@ -37,4 +37,8 @@ dependencies {
 
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+}
+
+tasks.create("stage") {
+    dependsOn("installDist")
 }

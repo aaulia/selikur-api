@@ -1,0 +1,1 @@
+web: ./build/install/com.selikur.api/bin/com.selikur.api

@@ -1,4 +1,4 @@
-package selikur.com.routes
+package com.selikur.api.routes
 
 import io.ktor.application.*
 import io.ktor.locations.*
@@ -13,11 +13,11 @@ import it.skrape.selects.DocElement
 import it.skrape.selects.html5.a
 import it.skrape.selects.html5.span
 import it.skrape.selects.text
-import selikur.com.models.Movie.Entry
-import selikur.com.models.Theater.Detail
-import selikur.com.models.Theater.Detail.Schedule
-import selikur.com.utils.itemize
-import selikur.com.utils.queryString
+import com.selikur.api.models.Movie.Entry
+import com.selikur.api.models.Theater.Detail
+import com.selikur.api.models.Theater.Detail.Schedule
+import com.selikur.api.utils.itemize
+import com.selikur.api.utils.queryString
 
 @OptIn(KtorExperimentalLocationsAPI::class)
 @Location("/theaters")

@@ -1,4 +1,4 @@
-package selikur.com.routes
+package com.selikur.api.routes
 
 import io.ktor.application.*
 import io.ktor.locations.*
@@ -12,10 +12,10 @@ import it.skrape.selects.Doc
 import it.skrape.selects.DocElement
 import it.skrape.selects.html5.a
 import it.skrape.selects.html5.div
-import selikur.com.models.City.Detail
-import selikur.com.models.City.Entry
-import selikur.com.models.Theater
-import selikur.com.utils.queryString
+import com.selikur.api.models.City.Detail
+import com.selikur.api.models.City.Entry
+import com.selikur.api.models.Theater
+import com.selikur.api.utils.queryString
 
 @OptIn(KtorExperimentalLocationsAPI::class)
 @Location("/cities")

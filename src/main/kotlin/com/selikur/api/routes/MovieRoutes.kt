@@ -1,4 +1,4 @@
-package selikur.com.routes
+package com.selikur.api.routes
 
 import io.ktor.application.*
 import io.ktor.locations.*
@@ -11,10 +11,10 @@ import it.skrape.fetcher.skrape
 import it.skrape.selects.Doc
 import it.skrape.selects.DocElement
 import it.skrape.selects.html5.*
-import selikur.com.models.Movie.Detail
-import selikur.com.models.Movie.Entry
-import selikur.com.utils.itemize
-import selikur.com.utils.queryString
+import com.selikur.api.models.Movie.Detail
+import com.selikur.api.models.Movie.Entry
+import com.selikur.api.utils.itemize
+import com.selikur.api.utils.queryString
 
 @OptIn(KtorExperimentalLocationsAPI::class)
 @Location("/movies")

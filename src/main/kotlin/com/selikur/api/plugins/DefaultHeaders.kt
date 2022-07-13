@@ -1,4 +1,4 @@
-package selikur.com.plugins
+package com.selikur.api.plugins
 
 import io.ktor.application.*
 import io.ktor.features.*

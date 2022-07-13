@@ -1,1 +1,1 @@
-rootProject.name = "selikur.com.api"
+rootProject.name = "com.selikur.api"
