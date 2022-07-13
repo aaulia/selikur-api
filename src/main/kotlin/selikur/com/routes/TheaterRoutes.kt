@@ -13,9 +13,9 @@ import it.skrape.selects.DocElement
 import it.skrape.selects.html5.a
 import it.skrape.selects.html5.span
 import it.skrape.selects.text
-import selikur.com.models.MovieEntry
-import selikur.com.models.Schedule
-import selikur.com.models.TheaterDetail
+import selikur.com.models.Movie.Entry
+import selikur.com.models.Theater.Detail
+import selikur.com.models.Theater.Detail.Schedule
 import selikur.com.utils.itemize
 import selikur.com.utils.queryString
 
@@ -34,7 +34,7 @@ fun Route.theaterRouting() {
             response {
                 htmlDocument {
                     relaxed = true
-                    toTheaterDetail(theater.id)
+                    toDetail(theater.id)
                 }
             }
         }
@@ -43,8 +43,8 @@ fun Route.theaterRouting() {
     }
 }
 
-private fun Doc.toTheaterDetail(id: String): TheaterDetail {
-    return TheaterDetail(
+private fun Doc.toDetail(id: String): Detail {
+    return Detail(
         id,
         "h4 > span > strong" { findFirst { text } },
         "h4 > span" { findSecond { text } }.substringBefore("TELEPON :").trim(),
@@ -68,7 +68,7 @@ private fun Doc.toTheaterDetail(id: String): TheaterDetail {
 
 private fun DocElement.toSchedule(): Schedule {
     return Schedule(
-        MovieEntry(
+        Entry(
             a { findFirst { eachHref.firstOrNull()?.queryString("movie_id").orEmpty() } },
             a { findSecond { text } },
             "img.img-responsive" { findFirst { eachSrc.firstOrNull().orEmpty() } },

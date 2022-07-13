@@ -12,9 +12,9 @@ import it.skrape.selects.Doc
 import it.skrape.selects.DocElement
 import it.skrape.selects.html5.a
 import it.skrape.selects.html5.div
-import selikur.com.models.CityDetail
-import selikur.com.models.CityEntry
-import selikur.com.models.TheaterEntry
+import selikur.com.models.City.Detail
+import selikur.com.models.City.Entry
+import selikur.com.models.Theater
 import selikur.com.utils.queryString
 
 @OptIn(KtorExperimentalLocationsAPI::class)
@@ -36,7 +36,7 @@ fun Route.cityRouting() {
                 htmlDocument {
                     relaxed = true
                     findAll(".list-group-item")
-                        .map(DocElement::toCityEntry)
+                        .map(DocElement::toEntry)
                 }
             }
         }
@@ -50,7 +50,7 @@ fun Route.cityRouting() {
             response {
                 htmlDocument {
                     relaxed = true
-                    toCityDetail(city.id)
+                    toDetail(city.id)
                 }
             }
         }
@@ -59,8 +59,8 @@ fun Route.cityRouting() {
     }
 }
 
-private fun DocElement.toCityEntry(): CityEntry {
-    return CityEntry(
+private fun DocElement.toEntry(): Entry {
+    return Entry(
         div {
             findFirst {
                 attribute("onclick")
@@ -74,8 +74,8 @@ private fun DocElement.toCityEntry(): CityEntry {
     )
 }
 
-private fun Doc.toCityDetail(id: String): CityDetail {
-    return CityDetail(
+private fun Doc.toDetail(id: String): Detail {
+    return Detail(
         id,
         "ul.navbar-left > li.nav_bar-animate" { 3 { a { 0 { text } } } }.substringAfterLast("-").trim(),
         "div.all      > li.list-group-item" { findAll { map(DocElement::toTheaterEntry) } },
@@ -84,8 +84,8 @@ private fun Doc.toCityDetail(id: String): CityDetail {
     )
 }
 
-private fun DocElement.toTheaterEntry(): TheaterEntry {
-    return TheaterEntry(
+private fun DocElement.toTheaterEntry(): Theater.Entry {
+    return Theater.Entry(
         div {
             findFirst {
                 attribute("onclick")

@@ -11,8 +11,8 @@ import it.skrape.fetcher.skrape
 import it.skrape.selects.Doc
 import it.skrape.selects.DocElement
 import it.skrape.selects.html5.*
-import selikur.com.models.MovieDetail
-import selikur.com.models.MovieEntry
+import selikur.com.models.Movie.Detail
+import selikur.com.models.Movie.Entry
 import selikur.com.utils.itemize
 import selikur.com.utils.queryString
 
@@ -38,7 +38,7 @@ fun Route.movieRouting() {
                 htmlDocument {
                     relaxed = true
                     findAll(".grid_movie")
-                        .map(DocElement::toMovieEntry)
+                        .map(DocElement::toEntry)
                 }
             }
         }
@@ -53,7 +53,7 @@ fun Route.movieRouting() {
                 htmlDocument {
                     relaxed = true
                     findAll(".grid_movie")
-                        .map(DocElement::toMovieEntry)
+                        .map(DocElement::toEntry)
                 }
             }
         }
@@ -67,7 +67,7 @@ fun Route.movieRouting() {
             response {
                 htmlDocument {
                     relaxed = true
-                    toMovieDetail(movie.id)
+                    toDetail(movie.id)
                 }
             }
         }
@@ -76,8 +76,8 @@ fun Route.movieRouting() {
     }
 }
 
-private fun DocElement.toMovieEntry(): MovieEntry {
-    return MovieEntry(
+private fun DocElement.toEntry(): Entry {
+    return Entry(
         a { findFirst { eachHref.firstOrNull()?.queryString("movie_id").orEmpty() } },  // id
         ".title" { findFirst { text } },                                                // title
         a { img { findFirst { eachSrc.firstOrNull().orEmpty() } } },                    // image
@@ -86,8 +86,8 @@ private fun DocElement.toMovieEntry(): MovieEntry {
     )
 }
 
-private fun Doc.toMovieDetail(id: String): MovieDetail {
-    return MovieDetail(
+private fun Doc.toDetail(id: String): Detail {
+    return Detail(
         id,                                                                             // id
         "div.col-xs-8 > div" { findFirst { text } },                                    // title
         "img.img-responsive" { findFirst { eachSrc.firstOrNull().orEmpty() } },         // image
