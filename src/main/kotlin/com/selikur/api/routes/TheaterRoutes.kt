@@ -1,6 +1,6 @@
 package com.selikur.api.routes
 
-import com.selikur.api.mappers.toTheaterDetail
+import com.selikur.api.mappers.theaterDetail
 import com.selikur.api.models.Theater.Detail
 import com.selikur.api.utils.cache.Cache
 import com.selikur.api.utils.cache.CacheMap
@@ -9,8 +9,8 @@ import io.ktor.application.*
 import io.ktor.locations.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import it.skrape.core.htmlDocument
 import it.skrape.fetcher.AsyncFetcher
+import it.skrape.fetcher.extract
 import it.skrape.fetcher.response
 import it.skrape.fetcher.skrape
 
@@ -34,13 +34,7 @@ fun Route.theaterRouting() {
         val memory = cacheMap<Theater.Detail>() as Cache.Keyed<String, Detail>
         val detail = memory.fetch(theater.id) ?: skrape(AsyncFetcher) {
             request { url = "https://m.21cineplex.com/gui.schedule.php?find_by=1&cinema_id=${theater.id}" }
-            response {
-                htmlDocument {
-                    relaxed = true
-                    toTheaterDetail(theater.id)
-                        .also(memory.store(theater.id)::invoke)
-                }
-            }
+            extract { memory.store(theater.id, theaterDetail(theater.id)) }
         }
 
         call.respond(detail)

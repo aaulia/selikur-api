@@ -4,14 +4,41 @@ import com.selikur.api.models.Movie
 import com.selikur.api.models.Theater
 import com.selikur.api.utils.itemize
 import com.selikur.api.utils.queryString
-import it.skrape.selects.Doc
+import it.skrape.core.htmlDocument
+import it.skrape.fetcher.Result
 import it.skrape.selects.DocElement
 import it.skrape.selects.html5.a
 import it.skrape.selects.html5.div
 import it.skrape.selects.html5.span
 import it.skrape.selects.text
 
-fun DocElement.toTheaterEntry(): Theater.Entry {
+fun Result.theaterDetail(id: String): Theater.Detail {
+    return htmlDocument {
+        relaxed = true
+        Theater.Detail(
+            id,
+            "h4 > span > strong" { findFirst { text } },
+            "h4 > span" { findSecond { text } }.substringBefore("TELEPON :").trim(),
+            "h4 > span" { findSecond { text } }.substringAfter("TELEPON :").trim(),
+            "a.map-link" {
+                findFirst {
+                    eachHref.firstOrNull()
+                        ?.queryString("q")
+                        ?.split(",")
+                        ?.map(String::trim)
+                        ?: emptyList()
+                }
+            },
+            "li.list-group-item" {
+                findAll {
+                    map(DocElement::theaterSchedule)
+                }
+            }
+        )
+    }
+}
+
+fun DocElement.theaterEntry(): Theater.Entry {
     return Theater.Entry(
         div {
             findFirst {
@@ -26,30 +53,7 @@ fun DocElement.toTheaterEntry(): Theater.Entry {
     )
 }
 
-fun Doc.toTheaterDetail(id: String): Theater.Detail {
-    return Theater.Detail(
-        id,
-        "h4 > span > strong" { findFirst { text } },
-        "h4 > span" { findSecond { text } }.substringBefore("TELEPON :").trim(),
-        "h4 > span" { findSecond { text } }.substringAfter("TELEPON :").trim(),
-        "a.map-link" {
-            findFirst {
-                eachHref.firstOrNull()
-                    ?.queryString("q")
-                    ?.split(",")
-                    ?.map(String::trim)
-                    ?: emptyList()
-            }
-        },
-        "li.list-group-item" {
-            findAll {
-                map(DocElement::toTheaterSchedule)
-            }
-        }
-    )
-}
-
-fun DocElement.toTheaterSchedule(): Theater.Detail.Schedule {
+private fun DocElement.theaterSchedule(): Theater.Detail.Schedule {
     return Theater.Detail.Schedule(
         Movie.Entry(
             a { findFirst { eachHref.firstOrNull()?.queryString("movie_id").orEmpty() } },

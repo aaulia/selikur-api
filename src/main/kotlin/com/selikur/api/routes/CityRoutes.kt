@@ -1,7 +1,7 @@
 package com.selikur.api.routes
 
-import com.selikur.api.mappers.toCityDetail
-import com.selikur.api.mappers.toCityEntry
+import com.selikur.api.mappers.cityDetail
+import com.selikur.api.mappers.cityEntries
 import com.selikur.api.models.City.Detail
 import com.selikur.api.models.City.Entry
 import com.selikur.api.utils.cache.Cache
@@ -10,11 +10,10 @@ import io.ktor.application.*
 import io.ktor.locations.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import it.skrape.core.htmlDocument
 import it.skrape.fetcher.AsyncFetcher
+import it.skrape.fetcher.extract
 import it.skrape.fetcher.response
 import it.skrape.fetcher.skrape
-import it.skrape.selects.DocElement
 
 @OptIn(KtorExperimentalLocationsAPI::class)
 @Location("/cities")
@@ -29,7 +28,7 @@ class City {
 // @formatter:off
 private val cacheMap = mapOf(
     City.Listing::class to Cache.NoKey<List<Entry>>(),
-    City.Detail::class  to Cache.Keyed<String, Detail>()
+    City.Detail ::class to Cache.Keyed<String, Detail>()
 )
 // @formatter:on
 
@@ -40,14 +39,7 @@ fun Route.cityRouting() {
         val memory = cacheMap<City.Listing>() as Cache.NoKey<List<Entry>>
         val cities = memory.fetch() ?: skrape(AsyncFetcher) {
             request { url = "https://m.21cineplex.com/gui.list_city.php" }
-            response {
-                htmlDocument {
-                    relaxed = true
-                    findAll(".list-group-item")
-                        .map(DocElement::toCityEntry)
-                        .also(memory::store)
-                }
-            }
+            extract { memory.store(cityEntries()) }
         }
 
         call.respond(cities)
@@ -58,13 +50,7 @@ fun Route.cityRouting() {
         val memory = cacheMap<City.Detail>() as Cache.Keyed<String, Detail>
         val detail = memory.fetch(city.id) ?: skrape(AsyncFetcher) {
             request { url = "https://m.21cineplex.com/gui.list_theater.php?city_id=${city.id}" }
-            response {
-                htmlDocument {
-                    relaxed = true
-                    toCityDetail(city.id)
-                        .also(memory.store(city.id)::invoke)
-                }
-            }
+            extract { memory.store(city.id, cityDetail(city.id)) }
         }
 
         call.respond(detail)

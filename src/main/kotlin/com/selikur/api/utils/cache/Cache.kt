@@ -4,6 +4,7 @@ import com.selikur.api.utils.cache.Entry.Empty
 import com.selikur.api.utils.cache.Entry.Exist
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import kotlin.reflect.KClass
 
 private sealed interface Entry {
     data class Exist<T : Any>(
@@ -72,4 +73,10 @@ sealed interface Cache {
             cache.clear()
         }
     }
+}
+
+typealias CacheMap = Map<KClass<*>, Cache>
+
+inline operator fun <reified T> CacheMap.invoke(): Cache {
+    return getValue(T::class)
 }
