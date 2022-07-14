@@ -1,4 +1,4 @@
-package com.selikur.api.mapper
+package com.selikur.api.mappers
 
 import com.selikur.api.models.City
 import com.selikur.api.utils.queryString

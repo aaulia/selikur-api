@@ -1,7 +1,11 @@
 package com.selikur.api.routes
 
-import com.selikur.api.mapper.toCityDetail
-import com.selikur.api.mapper.toCityEntry
+import com.selikur.api.mappers.toCityDetail
+import com.selikur.api.mappers.toCityEntry
+import com.selikur.api.models.City.Detail
+import com.selikur.api.models.City.Entry
+import com.selikur.api.utils.cache.Cache
+import com.selikur.api.utils.cache.invoke
 import io.ktor.application.*
 import io.ktor.locations.*
 import io.ktor.response.*
@@ -22,16 +26,26 @@ class City {
     data class Detail(val root: City, val id: String)
 }
 
+// @formatter:off
+private val cacheMap = mapOf(
+    City.Listing::class to Cache.NoKey<List<Entry>>(),
+    City.Detail::class  to Cache.Keyed<String, Detail>()
+)
+// @formatter:on
+
 @OptIn(KtorExperimentalLocationsAPI::class)
 fun Route.cityRouting() {
+    @Suppress("UNCHECKED_CAST")
     get<City.Listing> {
-        val cities = skrape(AsyncFetcher) {
+        val memory = cacheMap<City.Listing>() as Cache.NoKey<List<Entry>>
+        val cities = memory.fetch() ?: skrape(AsyncFetcher) {
             request { url = "https://m.21cineplex.com/gui.list_city.php" }
             response {
                 htmlDocument {
                     relaxed = true
                     findAll(".list-group-item")
                         .map(DocElement::toCityEntry)
+                        .also(memory::store)
                 }
             }
         }
@@ -39,13 +53,16 @@ fun Route.cityRouting() {
         call.respond(cities)
     }
 
+    @Suppress("UNCHECKED_CAST")
     get<City.Detail> { city ->
-        val detail = skrape(AsyncFetcher) {
+        val memory = cacheMap<City.Detail>() as Cache.Keyed<String, Detail>
+        val detail = memory.fetch(city.id) ?: skrape(AsyncFetcher) {
             request { url = "https://m.21cineplex.com/gui.list_theater.php?city_id=${city.id}" }
             response {
                 htmlDocument {
                     relaxed = true
                     toCityDetail(city.id)
+                        .also(memory.store(city.id)::invoke)
                 }
             }
         }

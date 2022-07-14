@@ -1,8 +1,14 @@
 package com.selikur.api.routes
 
-import com.selikur.api.mapper.toCityDetail
-import com.selikur.api.mapper.toMovieDetail
-import com.selikur.api.mapper.toMovieEntry
+import com.selikur.api.mappers.toCityDetail
+import com.selikur.api.mappers.toMovieDetail
+import com.selikur.api.mappers.toMovieEntry
+import com.selikur.api.models.City
+import com.selikur.api.models.Movie.Detail
+import com.selikur.api.models.Movie.Entry
+import com.selikur.api.utils.cache.Cache
+import com.selikur.api.utils.cache.CacheMap
+import com.selikur.api.utils.cache.invoke
 import io.ktor.application.*
 import io.ktor.locations.*
 import io.ktor.response.*
@@ -29,16 +35,28 @@ class Movie {
     data class PlayingAt(val root: Movie, val movieId: String, val cityId: String)
 }
 
+// @formatter:off
+private val cacheMap: CacheMap = mapOf(
+    Movie.Playing::class   to Cache.NoKey<List<Entry>>(),
+    Movie.Upcoming::class  to Cache.NoKey<List<Entry>>(),
+    Movie.Detail::class    to Cache.Keyed<String, Detail>(),
+    Movie.PlayingAt::class to Cache.Keyed<Pair<String, String>, List<City.Detail>>()
+)
+// @formatter:on
+
 @OptIn(KtorExperimentalLocationsAPI::class)
 fun Route.movieRouting() {
+    @Suppress("UNCHECKED_CAST")
     get<Movie.Playing> {
-        val movies = skrape(AsyncFetcher) {
+        val memory = cacheMap<Movie.Playing>() as Cache.NoKey<List<Entry>>
+        val movies = memory.fetch() ?: skrape(AsyncFetcher) {
             request { url = "https://m.21cineplex.com/index.php" }
             response {
                 htmlDocument {
                     relaxed = true
                     findAll(".grid_movie")
                         .map(DocElement::toMovieEntry)
+                        .also(memory::store)
                 }
             }
         }
@@ -46,14 +64,17 @@ fun Route.movieRouting() {
         call.respond(movies)
     }
 
+    @Suppress("UNCHECKED_CAST")
     get<Movie.Upcoming> {
-        val movies = skrape(AsyncFetcher) {
+        val memory = cacheMap<Movie.Upcoming>() as Cache.NoKey<List<Entry>>
+        val movies = memory.fetch() ?: skrape(AsyncFetcher) {
             request { url = "https://m.21cineplex.com/gui.coming_soon.php" }
             response {
                 htmlDocument {
                     relaxed = true
                     findAll(".grid_movie")
                         .map(DocElement::toMovieEntry)
+                        .also(memory::store)
                 }
             }
         }
@@ -61,13 +82,16 @@ fun Route.movieRouting() {
         call.respond(movies)
     }
 
+    @Suppress("UNCHECKED_CAST")
     get<Movie.Detail> { movie ->
-        val detail = skrape(AsyncFetcher) {
+        val memory = cacheMap<Movie.Detail>() as Cache.Keyed<String, Detail>
+        val detail = memory.fetch(movie.id) ?: skrape(AsyncFetcher) {
             request { url = "https://m.21cineplex.com/gui.movie_details.php?movie_id=${movie.id}" }
             response {
                 htmlDocument {
                     relaxed = true
                     toMovieDetail(movie.id)
+                        .also(memory.store(movie.id)::invoke)
                 }
             }
         }
@@ -75,13 +99,17 @@ fun Route.movieRouting() {
         call.respond(detail)
     }
 
+    @Suppress("UNCHECKED_CAST")
     get<Movie.PlayingAt> { (_, mId, cId) ->
-        val theaters = skrape(AsyncFetcher) {
+        val idPair = mId to cId
+        val memory = cacheMap<Movie.PlayingAt>() as Cache.Keyed<Pair<String, String>, City.Detail>
+        val theaters = memory.fetch(idPair) ?: skrape(AsyncFetcher) {
             request { url = "https://m.21cineplex.com/gui.list_theater.php?find_by=3&movie_id=${mId}&city_id=${cId}" }
             response {
                 htmlDocument {
                     relaxed = true
                     toCityDetail(cId)
+                        .also(memory.store(idPair)::invoke)
                 }
             }
         }

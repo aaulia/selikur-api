@@ -1,6 +1,10 @@
 package com.selikur.api.routes
 
-import com.selikur.api.mapper.toTheaterDetail
+import com.selikur.api.mappers.toTheaterDetail
+import com.selikur.api.models.Theater.Detail
+import com.selikur.api.utils.cache.Cache
+import com.selikur.api.utils.cache.CacheMap
+import com.selikur.api.utils.cache.invoke
 import io.ktor.application.*
 import io.ktor.locations.*
 import io.ktor.response.*
@@ -17,15 +21,24 @@ class Theater {
     data class Detail(val root: Theater, val id: String)
 }
 
+// @formatter:off
+private val cacheMap: CacheMap = mapOf(
+    Theater.Detail::class to Cache.Keyed<String, Detail>()
+)
+// @formatter:on
+
 @OptIn(KtorExperimentalLocationsAPI::class)
 fun Route.theaterRouting() {
+    @Suppress("UNCHECKED_CAST")
     get<Theater.Detail> { theater ->
-        val detail = skrape(AsyncFetcher) {
+        val memory = cacheMap<Theater.Detail>() as Cache.Keyed<String, Detail>
+        val detail = memory.fetch(theater.id) ?: skrape(AsyncFetcher) {
             request { url = "https://m.21cineplex.com/gui.schedule.php?find_by=1&cinema_id=${theater.id}" }
             response {
                 htmlDocument {
                     relaxed = true
                     toTheaterDetail(theater.id)
+                        .also(memory.store(theater.id)::invoke)
                 }
             }
         }
