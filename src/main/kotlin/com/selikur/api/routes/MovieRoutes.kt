@@ -15,7 +15,6 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import it.skrape.fetcher.AsyncFetcher
 import it.skrape.fetcher.extract
-import it.skrape.fetcher.response
 import it.skrape.fetcher.skrape
 
 @OptIn(KtorExperimentalLocationsAPI::class)
@@ -45,7 +44,7 @@ private val cacheMap: CacheMap = mapOf(
 
 @OptIn(KtorExperimentalLocationsAPI::class)
 fun Route.movieRouting() {
-    @Suppress("UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST", "DEPRECATION")
     get<Movie.Playing> {
         val memory = cacheMap<Movie.Playing>() as Cache.NoKey<List<Entry>>
         val movies = memory.fetch() ?: skrape(AsyncFetcher) {
@@ -56,7 +55,7 @@ fun Route.movieRouting() {
         call.respond(movies)
     }
 
-    @Suppress("UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST", "DEPRECATION")
     get<Movie.Upcoming> {
         val memory = cacheMap<Movie.Upcoming>() as Cache.NoKey<List<Entry>>
         val movies = memory.fetch() ?: skrape(AsyncFetcher) {
@@ -67,18 +66,18 @@ fun Route.movieRouting() {
         call.respond(movies)
     }
 
-    @Suppress("UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST", "DEPRECATION")
     get<Movie.Detail> { movie ->
         val memory = cacheMap<Movie.Detail>() as Cache.Keyed<String, Detail>
         val detail = memory.fetch(movie.id) ?: skrape(AsyncFetcher) {
             request { url = "https://m.21cineplex.com/gui.movie_details.php?movie_id=${movie.id}" }
-            extract { memory.store(movie.id, movieDetail(movie.id)) }
+            extract { memory.store(movie.id, ::movieDetail) }
         }
 
         call.respond(detail)
     }
 
-    @Suppress("UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST", "DEPRECATION")
     get<Movie.PlayingAt> { (_, mId, cId) ->
         val idPair = mId to cId
         val memory = cacheMap<Movie.PlayingAt>() as Cache.Keyed<Pair<String, String>, City.Detail>

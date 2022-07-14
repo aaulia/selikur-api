@@ -12,7 +12,6 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import it.skrape.fetcher.AsyncFetcher
 import it.skrape.fetcher.extract
-import it.skrape.fetcher.response
 import it.skrape.fetcher.skrape
 
 @OptIn(KtorExperimentalLocationsAPI::class)
@@ -34,7 +33,7 @@ private val cacheMap = mapOf(
 
 @OptIn(KtorExperimentalLocationsAPI::class)
 fun Route.cityRouting() {
-    @Suppress("UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST", "DEPRECATION")
     get<City.Listing> {
         val memory = cacheMap<City.Listing>() as Cache.NoKey<List<Entry>>
         val cities = memory.fetch() ?: skrape(AsyncFetcher) {
@@ -45,12 +44,12 @@ fun Route.cityRouting() {
         call.respond(cities)
     }
 
-    @Suppress("UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST", "DEPRECATION")
     get<City.Detail> { city ->
         val memory = cacheMap<City.Detail>() as Cache.Keyed<String, Detail>
         val detail = memory.fetch(city.id) ?: skrape(AsyncFetcher) {
             request { url = "https://m.21cineplex.com/gui.list_theater.php?city_id=${city.id}" }
-            extract { memory.store(city.id, cityDetail(city.id)) }
+            extract { memory.store(city.id, ::cityDetail) }
         }
 
         call.respond(detail)

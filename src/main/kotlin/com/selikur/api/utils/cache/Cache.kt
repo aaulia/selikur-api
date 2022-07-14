@@ -24,7 +24,7 @@ private sealed interface Entry {
 }
 
 sealed interface Cache {
-    class NoKey<T : Any>() : Cache, DataStore.NoKey<T> {
+    class NoKey<T : Any> : Cache, DataStore.NoKey<T> {
         private var entry: Entry = Empty
 
         override fun exist(): Boolean = entry !is Empty
@@ -67,6 +67,10 @@ sealed interface Cache {
 
         override fun store(key: T): (U) -> U {
             return { value -> store(key, value) }
+        }
+
+        fun store(key: T, getter: (T) -> U): U {
+            return store(key, getter(key))
         }
 
         override fun clear() {
