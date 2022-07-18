@@ -1,0 +1,264 @@
+_type: export
+__export_format: 4
+__export_date: 2022-07-18T16:49:23.655Z
+__export_source: insomnia.desktop.app:v2022.4.2
+resources:
+  - _id: req_42c95792601d4543b70f64c1cc6491fc
+    parentId: fld_bf5fddb9f33449188b2d25cf353b5ecd
+    modified: 1657695085967
+    created: 1656926937256
+    url: "{{ _.baseUrl }}/movies"
+    name: Playing
+    description: ""
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication: {}
+    metaSortKey: -1657695004764
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: fld_bf5fddb9f33449188b2d25cf353b5ecd
+    parentId: wrk_f021aa8d71a94995852b090809f7e97d
+    modified: 1657695162805
+    created: 1657695077377
+    name: Movie
+    description: ""
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1657695091669
+    _type: request_group
+  - _id: wrk_f021aa8d71a94995852b090809f7e97d
+    parentId: null
+    modified: 1656926929418
+    created: 1656926929418
+    name: Selikur
+    description: ""
+    scope: collection
+    _type: workspace
+  - _id: req_c1279768e0b64836b5645faed9bb8f08
+    parentId: fld_bf5fddb9f33449188b2d25cf353b5ecd
+    modified: 1657855809181
+    created: 1657707867361
+    url: "{{ _.baseUrl }}/movies/:movieId/theaters/:cityId"
+    name: Playing At
+    description: ""
+    method: GET
+    body: {}
+    parameters:
+      - id: pair_1c8cfe33e68f4b59ad108600089297ec
+        name: movieId
+        value: 21BPHE
+        description: ""
+      - id: pair_c7843eb63aed4a1a8166d16d0067c469
+        name: cityId
+        value: "32"
+        description: ""
+    headers: []
+    authentication: {}
+    metaSortKey: -1657695004739
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_cf49bd26dc3d419ebee598029b917f1d
+    parentId: fld_bf5fddb9f33449188b2d25cf353b5ecd
+    modified: 1657695084282
+    created: 1657694979326
+    url: "{{ _.baseUrl }}/movies/upcoming"
+    name: Upcoming
+    description: ""
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication: {}
+    metaSortKey: -1657695004714
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_232c26dc906547308f9960ed023eefb4
+    parentId: fld_bf5fddb9f33449188b2d25cf353b5ecd
+    modified: 1657708110525
+    created: 1657695004664
+    url: "{{ _.baseUrl }}/movies/:id"
+    name: Detail
+    description: ""
+    method: GET
+    body: {}
+    parameters:
+      - id: pair_a8dda98e261c4eb28597a0a60d142eaa
+        name: id
+        value: 21BPHE
+        description: ""
+    headers: []
+    authentication: {}
+    metaSortKey: -1657695004664
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_111b44162835405d88d8a42f62d6a901
+    parentId: fld_4094ca48634d4da0ac13e0ef0218b276
+    modified: 1657695122668
+    created: 1657695100800
+    url: "{{ _.baseUrl }}/cities"
+    name: Listing
+    description: ""
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication: {}
+    metaSortKey: -1657695100800
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: fld_4094ca48634d4da0ac13e0ef0218b276
+    parentId: wrk_f021aa8d71a94995852b090809f7e97d
+    modified: 1657695091619
+    created: 1657695091619
+    name: City
+    description: ""
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1657695091619
+    _type: request_group
+  - _id: req_6e242c163bb04f2d9ec738ef36ba5026
+    parentId: fld_4094ca48634d4da0ac13e0ef0218b276
+    modified: 1657855843656
+    created: 1657695127486
+    url: "{{ _.baseUrl }}/cities/:id"
+    name: Detail
+    description: ""
+    method: GET
+    body: {}
+    parameters:
+      - id: pair_8c78f4c523af47339674e36257f6ccae
+        name: id
+        value: "32"
+        description: ""
+    headers: []
+    authentication: {}
+    metaSortKey: -1657695100750
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_7c9f607ec3e048fb8f71defffae15017
+    parentId: fld_ceb9f9266d1c42c4aa569806c973b59c
+    modified: 1657803332149
+    created: 1657695179032
+    url: "{{ _.baseUrl }}/theaters/:id"
+    name: Detail
+    description: ""
+    method: GET
+    body: {}
+    parameters:
+      - id: pair_dc06d25f61394d899962a1868a4a506a
+        name: id
+        value: BKSMETL
+        description: ""
+    headers: []
+    authentication: {}
+    metaSortKey: -1657695179032
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: fld_ceb9f9266d1c42c4aa569806c973b59c
+    parentId: wrk_f021aa8d71a94995852b090809f7e97d
+    modified: 1657695177944
+    created: 1657695170364
+    name: Theater
+    description: ""
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1657695091569
+    _type: request_group
+  - _id: env_8000df8b6297741f421c830241d37cafeadb7397
+    parentId: wrk_f021aa8d71a94995852b090809f7e97d
+    modified: 1657694810553
+    created: 1656926929438
+    name: Base Environment
+    data: {}
+    dataPropertyOrder: {}
+    color: null
+    isPrivate: false
+    metaSortKey: 1656926929439
+    _type: environment
+  - _id: jar_8000df8b6297741f421c830241d37cafeadb7397
+    parentId: wrk_f021aa8d71a94995852b090809f7e97d
+    modified: 1656926929441
+    created: 1656926929441
+    name: Default Jar
+    cookies: []
+    _type: cookie_jar
+  - _id: spc_0cc552acf5994044b30b51ef1e91dd2e
+    parentId: wrk_f021aa8d71a94995852b090809f7e97d
+    modified: 1656926929433
+    created: 1656926929433
+    fileName: Selikur
+    contents: ""
+    contentType: yaml
+    _type: api_spec
+  - _id: env_f97bf41a70944064920601a7d980aa10
+    parentId: env_8000df8b6297741f421c830241d37cafeadb7397
+    modified: 1657694924924
+    created: 1657694821013
+    name: Heroku
+    data:
+      baseUrl: https://selikur-api.herokuapp.com
+    dataPropertyOrder:
+      "&":
+        - baseUrl
+    color: "#00ff80"
+    isPrivate: false
+    metaSortKey: 1657694821013
+    _type: environment
+  - _id: env_a3deb0e7ec224a4d92fb9672cfe81143
+    parentId: env_8000df8b6297741f421c830241d37cafeadb7397
+    modified: 1657694921344
+    created: 1657694830946
+    name: Local
+    data:
+      baseUrl: http://localhost:8080
+    dataPropertyOrder:
+      "&":
+        - baseUrl
+    color: "#ffff00"
+    isPrivate: false
+    metaSortKey: 1657694830946
+    _type: environment
