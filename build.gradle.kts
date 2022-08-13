@@ -24,16 +24,17 @@ repositories {
     mavenCentral()
 }
 
-@Suppress("GradlePackageUpdate")
 dependencies {
     implementation("io.ktor:ktor-server-core:$ktor_version")
-    implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
-    implementation("io.ktor:ktor-locations:$ktor_version")
+    implementation("io.ktor:ktor-server-locations:$ktor_version")
+    implementation("io.ktor:ktor-server-default-headers:$ktor_version")
+    implementation("io.ktor:ktor-server-content-negotiation:$ktor_version")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
 
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
-    implementation("it.skrape:skrapeit:1.2.1")
+    implementation("it.skrape:skrapeit:$skrape_version")
 
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")

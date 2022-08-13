@@ -6,10 +6,10 @@ import com.selikur.api.models.City.Detail
 import com.selikur.api.models.City.Entry
 import com.selikur.api.utils.cache.Cache
 import com.selikur.api.utils.cache.invoke
-import io.ktor.application.*
-import io.ktor.locations.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.locations.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import it.skrape.fetcher.AsyncFetcher
 import it.skrape.fetcher.extract
 import it.skrape.fetcher.skrape
